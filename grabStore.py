@@ -79,7 +79,7 @@ def findCustomDiv():
                                 if(activeButton[0].value_of_css_property("background-color") != 'rgba(246, 246, 246, 1)'): 
                                     itemName = driver.find_element(By.XPATH,'//div[@role="dialog"]/div/div/h1').text
                                     csvwriter.writerow({'Food Item': itemName, 'URL': link})
-                                    ++countFreeItems
+                                    countFreeItems += 1
                             # print(link+" - got free food")
                             else:
                                 print("nothing here")
