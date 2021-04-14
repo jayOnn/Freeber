@@ -55,7 +55,7 @@ def grabAllStorePage():
 def findCustomDiv():
     print("Scanning for Food...")
     with open(storeListFile, "r") as f:
-        with open(csvFile, "w+") as cf:
+        with open(csvFile, "w+", newline='') as cf:
             csvwriter = csv.DictWriter(cf,fieldnames=csvFields)
             csvwriter.writeheader()
             contents = f.read()
@@ -97,7 +97,7 @@ try:
     time.sleep(5)
     findCustomDiv()
     driver.close()
-    print('Scan Complete. '+countFreeItems+' item(s) found')
+    print('Scan Complete. '+str(countFreeItems)+' item(s) found')
 except TimeoutException:
     print ("Error!")
 
