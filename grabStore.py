@@ -53,6 +53,7 @@ def grabAllStorePage():
     print("Scrape nearby stores")
 
 def findCustomDiv():
+    global countFreeItems
     print("Scanning for Food...")
     with open(storeListFile, "r") as f:
         with open(csvFile, "w+", newline='') as cf:
