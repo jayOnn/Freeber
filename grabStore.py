@@ -38,7 +38,7 @@ def goToLocation(location):
 
 def grabAllStorePage():
     restURLS = driver.find_elements(By.XPATH,'//a[contains(@href, "%s")]' % 'food-delivery')
-    with open(storeListFile, "a+") as f:
+    with open(storeListFile, "a+", encoding='utf-8') as f:
         for items in restURLS:
             #print(items.get_attribute('href'))
             dupFlag = 0
@@ -55,8 +55,8 @@ def grabAllStorePage():
 def findCustomDiv():
     global countFreeItems
     print("Scanning for Food...")
-    with open(storeListFile, "r") as f:
-        with open(csvFile, "w+", newline='') as cf:
+    with open(storeListFile, "r", encoding='utf-8') as f:
+        with open(csvFile, "w+", newline='', encoding='utf-8') as cf:
             csvwriter = csv.DictWriter(cf,fieldnames=csvFields)
             csvwriter.writeheader()
             contents = f.read()
