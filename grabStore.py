@@ -3,6 +3,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import ElementNotInteractableException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from chromedriver_py import binary_path  # Adds chromedriver binary to path
@@ -16,7 +18,7 @@ driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=binary_
 driver.get("https://www.ubereats.com/ca")
 
 #script variables
-delay = 5 # seconds
+delay = 10 # seconds
 curLocal ="Toronto, Ontario"
 curTS = time.time()
 countFreeItems = 0
@@ -37,18 +39,26 @@ def goToLocation(location):
     actions.send_keys(Keys.RETURN).perform()
 
 def grabAllStorePage():
+    while True:
+        try:
+            showMoreButton = driver.find_element_by_xpath("//*[contains(text(), 'Show more')]")
+            actions = ActionChains(driver)
+            actions.move_to_element(showMoreButton).click(showMoreButton).perform()
+        except ElementNotInteractableException:
+            break
+        try: # Continue after Loading is complete
+            WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.CSS_SELECTOR, "svg[aria-label='Loading...']")))
+            WebDriverWait(driver, delay).until_not(EC.presence_of_element_located((By.CSS_SELECTOR, "svg[aria-label='Loading...']")))
+        except NoSuchElementException:
+            break
     restURLS = driver.find_elements(By.XPATH,'//a[contains(@href, "%s")]' % 'food-delivery')
     with open(storeListFile, "a+", encoding='utf-8') as f:
+        lookBack = ""
         for items in restURLS:
-            #print(items.get_attribute('href'))
-            dupFlag = 0
-            contents = f.read()
-            for entry in contents.split('\n'):
-                if entry == items.get_attribute('href'):
-                    dupFlag = 1
-                    break
-            if dupFlag == 0:
-                f.write(items.get_attribute('href')+'\n')
+            if lookBack == items.get_attribute('href'):
+                continue
+            f.write(items.get_attribute('href')+'\n')
+            lookBack = items.get_attribute('href')
         f.close()
     print("Scrape nearby stores")
 
@@ -100,7 +110,7 @@ try:
     driver.close()
     print('Scan Complete. '+str(countFreeItems)+' item(s) found')
 except TimeoutException:
-    print ("Error!")
+    print ("Error!!")
 
 
 
